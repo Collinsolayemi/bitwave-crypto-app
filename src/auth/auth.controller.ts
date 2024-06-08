@@ -9,16 +9,23 @@ import {
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dto/create-auth.dto';
+import { SignupDto } from './dto/signup.dto.ts';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { OtpService } from 'src/common/services/otp/otp.service';
+import { VerifyOtpDTO } from 'src/common/services/otp/dto/verify-otp.dto';
+import { RequestOtpDto } from 'src/common/services/otp/dto/request-otp.dto';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private otpService: OtpService,
+  ) {}
 
   @ApiOperation({ summary: 'User signup' })
-  @Post('/signup')
+  @Post('signup')
   async signup(@Body() signUpdto: SignupDto, @Res() res) {
     await this.authService.signup(signUpdto);
     return res.status(201).json({ message: 'Check your email for otp' });
@@ -26,36 +33,25 @@ export class AuthController {
 
   @ApiOperation({ summary: 'User request for Otp' })
   @Post('request-otp')
-  async requestOtp(@Body() signUpdto: SignupDto, @Res() res) {
-    await this.authService.signup(signUpdto);
+  async requestOtp(@Body() requestOtpDto: RequestOtpDto, @Res() res) {
+    const { email } = requestOtpDto;
+    await this.otpService.requestOtp({ email });
     return res.status(201).json({ message: 'Check your email for otp' });
   }
 
   @ApiOperation({ summary: 'User verify Otp' })
   @Post('verify-otp')
-  async verifyOtp(@Body() signUpdto: SignupDto, @Res() res) {
-    await this.authService.signup(signUpdto);
-    return res.status(201).json({ message: 'Check your email for otp' });
+  async verifyOtp(@Body() verifyOtpdto: VerifyOtpDTO, @Res() res) {
+    const { email, otp } = verifyOtpdto;
+    await this.otpService.verifyOtp({ email, otp });
+    return res.status(201).json({ message: 'Account verified successfully' });
   }
 
-
-  // @Get()
-  // findAll() {
-  //   return this.authService.findAll();
-  // }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.authService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-  //   return this.authService.update(+id, updateAuthDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.authService.remove(+id);
-  // }
+  @ApiOperation({ summary: 'User login' })
+  @Post('login')
+  async login(@Body() loginDto: LoginDto, @Res() res) {
+    const { email, password } = loginDto;
+    const result = await this.authService.login({ email, password });
+    return res.status(200).json(result);
+  }
 }

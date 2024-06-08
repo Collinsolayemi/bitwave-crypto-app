@@ -6,17 +6,19 @@ import { UserModule } from './user/user.module';
 import { getMetadataArgsStorage } from 'typeorm';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 
 dotenv.config();
-
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     EventEmitterModule.forRoot(),
     MailerModule.forRoot({
       transport: {
@@ -35,7 +37,7 @@ dotenv.config();
       },
       template: {
         dir: join(__dirname, '../src/common/services/mail/templates'),
-        adapter: new HandlebarsAdapter(), // Un-comment and use HandlebarsAdapter
+        adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
         },
