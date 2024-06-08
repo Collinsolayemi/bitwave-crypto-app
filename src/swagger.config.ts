@@ -10,6 +10,8 @@ export function setupSwagger(app: INestApplication): void {
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
       'JWT',
     )
+    .addServer('http://localhost:3000')
+    .addServer('https://bitwave-crypto-app.onrender.com')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
