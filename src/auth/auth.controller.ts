@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Res,
+  HttpException,
+  HttpStatus
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignupDto } from './dto/signup.dto.ts';
@@ -15,6 +17,7 @@ import { OtpService } from 'src/common/services/otp/otp.service';
 import { VerifyOtpDTO } from 'src/common/services/otp/dto/verify-otp.dto';
 import { RequestOtpDto } from 'src/common/services/otp/dto/request-otp.dto';
 import { LoginDto } from './dto/login.dto';
+import { Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -47,11 +50,23 @@ export class AuthController {
     return res.status(201).json({ message: 'Account verified successfully' });
   }
 
+  // @ApiOperation({ summary: 'User login' })
+  // @Post('login')
+  // async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+  //   const { email, password } = loginDto;
+  //   const result = await this.authService.login({ email, password });
+  //   return res.status(200).json(result);
+  // }
+
+
   @ApiOperation({ summary: 'User login' })
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res() res) {
-    const { email, password } = loginDto;
-    const result = await this.authService.login({ email, password });
-    return res.status(200).json(result);
+  async login(@Body() loginDto: LoginDto, @Res() res: Response) {
+    try {
+      const result = await this.authService.login(loginDto);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+    }
   }
 }
