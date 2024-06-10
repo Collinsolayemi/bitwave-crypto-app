@@ -57,13 +57,13 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User with email ${email} not found`);
     }
 
     const isPasswordMatch = await bcrypt.compare(inputPassword, user.password);
 
     if (!isPasswordMatch) {
-      throw new BadRequestException('Password Incorrect');
+      throw new BadRequestException('Incorrect email or password');
     }
   }
 
@@ -73,7 +73,7 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(`User with email ${email} not found`);
     }
 
     await this.comparePassword(password, email);
