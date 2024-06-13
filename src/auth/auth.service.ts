@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
@@ -13,6 +15,9 @@ import { User } from 'src/user/entities/user.entity';
 import { LoginDto } from './dto/login.dto.js';
 import * as jwt from 'jsonwebtoken';
 import { ForgetPasswordDto } from './dto/forget-password.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
+import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto.js';
+import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -50,22 +55,7 @@ export class AuthService {
     });
 
     await this.otpService.requestOtp({ email });
-
-    return user;
-  }
-
-  async comparePassword(inputPassword: string, email: string) {
-    const user = await this.userRepository.findOne({ where: { email } });
-
-    if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
-    }
-
-    const isPasswordMatch = await bcrypt.compare(inputPassword, user.password);
-
-    if (!isPasswordMatch) {
-      throw new BadRequestException('Incorrect email or password');
-    }
+    return { user, statusCode: HttpStatus.OK };
   }
 
   async login(loginDto: LoginDto) {
@@ -74,18 +64,28 @@ export class AuthService {
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new HttpException(
+        `User with email ${email} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    await this.comparePassword(password, email);
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+      throw new BadRequestException('Incorrect email or password');
+    }
 
     const accessToken = this.generateAccessToken(user.id, user.email);
     return {
-      accessToken,
-      user: {
-        id: user.id,
-        email: user.email,
+      data: {
+        accessToken,
+        user: {
+          id: user.id,
+          email: user.email,
+        },
       },
+      statusCode: HttpStatus.OK,
     };
   }
 
@@ -103,6 +103,133 @@ export class AuthService {
 
     return {
       message: 'OTP has been sent to your email for password reset',
+      statusCode: HttpStatus.OK,
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { email, newPassword, confirmPassword } = resetPasswordDto;
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new HttpException(
+        `User with email ${email} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+
+    await this.userRepository.save(user);
+
+    return {
+      statusCode: 200,
+      message: 'Password reset successfully',
+    };
+  }
+
+  async updateSecreRecoveryPhrase(
+    secretRecoveryPhrase: SecretRecoveryPhraseDto,
+  ) {
+    const { email, secretRecovery } = secretRecoveryPhrase;
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new HttpException(
+        `User with email ${email} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    // Ensure secretRecovery is not empty or undefined
+    if (!secretRecovery) {
+      throw new HttpException(
+        'Secret recovery phrase is required',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Hash the secret recovery phrase with bcrypt
+    const hashedSecretPhrase = await bcrypt.hash(secretRecovery, 10);
+
+    // Update user's secret recovery phrase with hashed value
+    user.secretRecovery = hashedSecretPhrase;
+
+    // Save the updated user object to the database
+    await this.userRepository.save(user);
+
+    // Return success message
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Secret recovery phrase updated successfully',
+    };
+  }
+
+  // async confirmSecreRecoveryPhrase(
+  //   confirmSecretRecoveryPhrase: ConfirmSecretRecoveryPhraseDto,
+  // ) {
+  //   const { email, confirmSecretRecovery } = confirmSecretRecoveryPhrase;
+  //   const user = await this.userRepository.findOne({ where: { email } });
+
+  //   if (!user) {
+  //     throw new HttpException(
+  //       `User with email ${email} not found`,
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+
+  //   const isSecretMatch = await bcrypt.compare(
+  //     confirmSecretRecovery,
+  //     user.secretRecovery,
+  //   );
+  //   console.log(isSecretMatch);
+
+  //   if (!isSecretMatch) {
+  //     throw new HttpException(
+  //       'secret recovery phrase does not match',
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     message: 'Secret recovery phrase updated successfully',
+  //   };
+  // }
+
+  async confirmSecreRecoveryPhrase(
+    confirmSecretRecoveryPhrase: ConfirmSecretRecoveryPhraseDto,
+  ) {
+    const { email, confirmSecretRecovery } = confirmSecretRecoveryPhrase;
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      throw new HttpException(
+        `User with email ${email} not found`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const isSecretMatch = await bcrypt.compare(
+      confirmSecretRecovery,
+      user.secretRecovery,
+    );
+
+    if (!isSecretMatch) {
+      throw new HttpException(
+        'Secret recovery phrase does not match',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Secret recovery phrase matches',
     };
   }
 

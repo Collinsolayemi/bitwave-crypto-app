@@ -7,6 +7,9 @@ import { VerifyOtpDTO } from 'src/common/services/otp/dto/verify-otp.dto';
 import { RequestOtpDto } from 'src/common/services/otp/dto/request-otp.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto';
+import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -20,10 +23,6 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() signUpdto: SignupDto) {
     await this.authService.signup(signUpdto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Check your email for otp',
-    };
   }
 
   @ApiOperation({ summary: 'User request for Otp' })
@@ -31,10 +30,6 @@ export class AuthController {
   async requestOtp(@Body() requestOtpDto: RequestOtpDto) {
     const { email } = requestOtpDto;
     await this.otpService.requestOtp({ email });
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Check your email for otp',
-    };
   }
 
   @ApiOperation({ summary: 'User verify Otp' })
@@ -42,29 +37,43 @@ export class AuthController {
   async verifyOtp(@Body() verifyOtpdto: VerifyOtpDTO) {
     const { email, otp } = verifyOtpdto;
     await this.otpService.verifyOtp({ email, otp });
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Account verified successfully',
-    };
   }
 
   @ApiOperation({ summary: 'User login' })
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const result = await this.authService.login(loginDto);
-    return {
-      statusCode: HttpStatus.OK,
-      ...result,
-    };
+    await this.authService.login(loginDto);
   }
 
   @ApiOperation({ summary: 'User forget their password' })
-  @Post('forgetPassword')
+  @Post('forget-Password')
   async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
-    const result = await this.authService.forgetPassword(forgetPasswordDto);
-    return {
-      statusCode: HttpStatus.OK,
-      ...result,
-    };
+    await this.authService.forgetPassword(forgetPasswordDto);
+  }
+
+  @ApiOperation({ summary: 'User reset their password' })
+  @Post('reset-Password')
+  async rresetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    await this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @ApiOperation({ summary: 'User select secret recovery phrase' })
+  @Post('update-secret-recovery-phrase')
+  async updateSecretRecoveryPhrase(
+    @Body() secretRecoveryPhraseDto: SecretRecoveryPhraseDto,
+  ) {
+    return await this.authService.updateSecreRecoveryPhrase(
+      secretRecoveryPhraseDto,
+    );
+  }
+
+  @ApiOperation({ summary: 'User confirm thier secret recovery phrase' })
+  @Post('confirm-secret-recovery-phrase')
+  async confirmSecretRecoveryPhrase(
+    @Body() confirmSecretRecoveryPhraseDto: ConfirmSecretRecoveryPhraseDto,
+  ) {
+    await this.authService.confirmSecreRecoveryPhrase(
+      confirmSecretRecoveryPhraseDto,
+    );
   }
 }

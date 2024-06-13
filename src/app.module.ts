@@ -53,9 +53,9 @@ dotenv.config();
       autoLoadEntities: true,
       entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
       synchronize: true,
-      ssl: {
-        rejectUnauthorized: false,
-      },
+      // ssl: {
+      //   rejectUnauthorized: false,
+      // },
     }),
     UserModule,
     AuthModule,
@@ -65,4 +65,3 @@ dotenv.config();
 })
 export class AppModule {}
 
-// https://bitwave-crypto-app.onrender.com/api/v1/auth/login
