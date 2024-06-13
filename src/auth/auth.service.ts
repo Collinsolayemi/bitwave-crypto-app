@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { LoginDto } from './dto/login.dto.js';
 import * as jwt from 'jsonwebtoken';
+import { ForgetPasswordDto } from './dto/forget-password.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -85,6 +86,23 @@ export class AuthService {
         id: user.id,
         email: user.email,
       },
+    };
+  }
+
+  async forgetPassword(forgetPasswordDto: ForgetPasswordDto) {
+    const { email } = forgetPasswordDto;
+
+    const existingUser = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!existingUser) {
+      throw new BadRequestException('Email already in use');
+    }
+    await this.otpService.requestOtp({ email });
+
+    return {
+      message: 'OTP has been sent to your email for password reset',
     };
   }
 

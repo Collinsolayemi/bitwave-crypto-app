@@ -6,6 +6,7 @@ import { OtpService } from 'src/common/services/otp/otp.service';
 import { VerifyOtpDTO } from 'src/common/services/otp/dto/verify-otp.dto';
 import { RequestOtpDto } from 'src/common/services/otp/dto/request-otp.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -51,6 +52,16 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const result = await this.authService.login(loginDto);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
+  }
+
+  @ApiOperation({ summary: 'User forget their password' })
+  @Post('forgetPassword')
+  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
+    const result = await this.authService.forgetPassword(forgetPasswordDto);
     return {
       statusCode: HttpStatus.OK,
       ...result,
