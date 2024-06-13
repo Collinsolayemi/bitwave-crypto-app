@@ -22,39 +22,39 @@ export class AuthController {
   @ApiOperation({ summary: 'User signup' })
   @Post('signup')
   async signup(@Body() signUpdto: SignupDto) {
-    await this.authService.signup(signUpdto);
+    return await this.authService.signup(signUpdto);
   }
 
   @ApiOperation({ summary: 'User request for Otp' })
   @Post('request-otp')
   async requestOtp(@Body() requestOtpDto: RequestOtpDto) {
     const { email } = requestOtpDto;
-    await this.otpService.requestOtp({ email });
+    return await this.otpService.requestOtp({ email });
   }
 
   @ApiOperation({ summary: 'User verify Otp' })
   @Post('verify-otp')
   async verifyOtp(@Body() verifyOtpdto: VerifyOtpDTO) {
     const { email, otp } = verifyOtpdto;
-    await this.otpService.verifyOtp({ email, otp });
+    return await this.otpService.verifyOtp({ email, otp });
   }
 
   @ApiOperation({ summary: 'User login' })
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    await this.authService.login(loginDto);
+    return await this.authService.login(loginDto);
   }
 
   @ApiOperation({ summary: 'User forget their password' })
   @Post('forget-Password')
   async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
-    await this.authService.forgetPassword(forgetPasswordDto);
+    return await this.authService.forgetPassword(forgetPasswordDto);
   }
 
   @ApiOperation({ summary: 'User reset their password' })
   @Post('reset-Password')
   async rresetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    await this.authService.resetPassword(resetPasswordDto);
+    return await this.authService.resetPassword(resetPasswordDto);
   }
 
   @ApiOperation({ summary: 'User select secret recovery phrase' })
@@ -72,7 +72,7 @@ export class AuthController {
   async confirmSecretRecoveryPhrase(
     @Body() confirmSecretRecoveryPhraseDto: ConfirmSecretRecoveryPhraseDto,
   ) {
-    await this.authService.confirmSecreRecoveryPhrase(
+    return await this.authService.confirmSecreRecoveryPhrase(
       confirmSecretRecoveryPhraseDto,
     );
   }
