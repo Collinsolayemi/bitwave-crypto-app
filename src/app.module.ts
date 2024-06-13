@@ -12,6 +12,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { TransactionModule } from './transaction/transaction.module';
 
 dotenv.config();
 @Module({
@@ -59,6 +60,7 @@ dotenv.config();
     }),
     UserModule,
     AuthModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

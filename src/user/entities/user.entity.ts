@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Transaction } from 'src/transaction/entities/transaction.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity {
@@ -23,8 +30,12 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   country: string;
 
-
   @Column({ type: 'varchar', length: 100, nullable: true })
   secretRecovery: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  balance: number;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  myTransactions: Transaction[];
 }
