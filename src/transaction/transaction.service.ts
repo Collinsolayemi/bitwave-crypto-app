@@ -27,8 +27,8 @@ export class TransactionService {
     return await this.transactionRepository.save(transaction);
   }
 
-  async makePayment() {
-    
+  async addCrypto() {
+
   }
 
   findAll() {

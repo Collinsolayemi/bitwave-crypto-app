@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { User } from 'src/user/entities/user.entity';
@@ -43,6 +47,11 @@ export class OtpService {
     user.otp = null;
     user.otpExpiration = null;
     await this.userRepository.save(user);
+
+    return {
+      message: 'Account verified successfully',
+      statusCode: HttpStatus.OK,
+    };
   }
 
   async requestOtp({ email }: { email: string }) {
@@ -67,6 +76,11 @@ export class OtpService {
       'OTP for Account Verification',
       otp,
     );
+
+    return {
+      message: 'OTP has been sent to your email',
+      statusCode: HttpStatus.OK,
+    };
   }
 
   @OnEvent('email', { async: true, promisify: true })
