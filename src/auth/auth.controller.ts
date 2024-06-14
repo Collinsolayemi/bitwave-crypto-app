@@ -1,6 +1,5 @@
 import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupDto } from './dto/signup.dto.ts';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OtpService } from 'src/common/services/otp/otp.service';
 import { VerifyOtpDTO } from 'src/common/services/otp/dto/verify-otp.dto';
@@ -10,8 +9,9 @@ import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto';
 import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto';
+import { SignupStep1Dto, SignupStep2Dto } from './dto/signup.dto.ts';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -20,9 +20,15 @@ export class AuthController {
   ) {}
 
   @ApiOperation({ summary: 'User signup' })
-  @Post('signup')
-  async signup(@Body() signUpdto: SignupDto) {
-    return await this.authService.signup(signUpdto);
+  @Post('signup-step1')
+  async signupStep1(@Body() signUpdto: SignupStep1Dto) {
+    return await this.authService.signupStep1(signUpdto);
+  }
+
+  @ApiOperation({ summary: 'User signup' })
+  @Post('signup-step2')
+  async signupStep2(@Body() signUpdto: SignupStep2Dto) {
+    return await this.authService.signUpStep2(signUpdto);
   }
 
   @ApiOperation({ summary: 'User request for Otp' })

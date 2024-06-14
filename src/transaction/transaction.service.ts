@@ -14,17 +14,21 @@ export class TransactionService {
     private transactionRepository: Repository<Transaction>,
   ) {}
 
-  createTransaction(payload: CreateTransactionDto): Promise<Transaction> {
+  async createTransaction(payload: CreateTransactionDto): Promise<Transaction> {
     const transactionRef = `transRefId-${nanoid(10)}`;
 
     const { amount, userId, additionalDetails } = payload;
     const transaction = this.transactionRepository.create({
       amount,
       transactionRef,
-      user: { id: userId } as User, 
+      user: { id: userId } as User,
       additionalDetails,
     });
-    return this.transactionRepository.save(transaction);
+    return await this.transactionRepository.save(transaction);
+  }
+
+  async makePayment() {
+    
   }
 
   findAll() {
