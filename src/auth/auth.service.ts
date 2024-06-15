@@ -159,6 +159,13 @@ export class AuthService {
     secretRecoveryPhrase: SecretRecoveryPhraseDto,
   ) {
     const { email, secretRecovery } = secretRecoveryPhrase;
+
+    if (secretRecovery.length !== 12) {
+      throw new BadRequestException(
+        'The recovery phrase must contain exactly 12 words.',
+      );
+    }
+
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
@@ -168,34 +175,22 @@ export class AuthService {
       );
     }
 
-    // Ensure secretRecovery is not empty or undefined
-    if (!secretRecovery) {
-      throw new HttpException(
-        'Secret recovery phrase is required',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    const joinedSecretRecovery = secretRecovery.join(' ');
+    const hashedSecretPhrase = await bcrypt.hash(joinedSecretRecovery, 10);
 
-    // Hash the secret recovery phrase with bcrypt
-    const hashedSecretPhrase = await bcrypt.hash(secretRecovery, 10);
-
-    // Update user's secret recovery phrase with hashed value
     user.secretRecovery = hashedSecretPhrase;
-
-    // Save the updated user object to the database
     await this.userRepository.save(user);
 
-    // Return success message
     return {
       statusCode: HttpStatus.OK,
       message: 'Secret recovery phrase updated successfully',
     };
   }
 
-  async confirmSecreRecoveryPhrase(
-    confirmSecretRecoveryPhrase: ConfirmSecretRecoveryPhraseDto,
+  async confirmSecretRecoveryPhrase(
+    confirmSecretRecoveryPhraseDto: ConfirmSecretRecoveryPhraseDto,
   ) {
-    const { email, confirmSecretRecovery } = confirmSecretRecoveryPhrase;
+    const { email, confirmSecretRecovery } = confirmSecretRecoveryPhraseDto;
     const user = await this.userRepository.findOne({ where: { email } });
 
     if (!user) {
@@ -205,8 +200,10 @@ export class AuthService {
       );
     }
 
+    const joinConfirmSecret = confirmSecretRecovery.join(' ');
+
     const isSecretMatch = await bcrypt.compare(
-      confirmSecretRecovery,
+      joinConfirmSecret,
       user.secretRecovery,
     );
 
@@ -216,6 +213,7 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Secret recovery phrase matches',

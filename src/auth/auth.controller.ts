@@ -78,7 +78,7 @@ export class AuthController {
   async confirmSecretRecoveryPhrase(
     @Body() confirmSecretRecoveryPhraseDto: ConfirmSecretRecoveryPhraseDto,
   ) {
-    return await this.authService.confirmSecreRecoveryPhrase(
+    return await this.authService.confirmSecretRecoveryPhrase(
       confirmSecretRecoveryPhraseDto,
     );
   }

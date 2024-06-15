@@ -30,7 +30,14 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   country: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  // @Column({ type: 'varchar', length: 100, nullable: true })
+  // secretRecovery: string;
+
+  @Column({
+    type: 'varchar',
+    length: 1000,
+    nullable: true,
+  })
   secretRecovery: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
@@ -38,4 +45,16 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   myTransactions: Transaction[];
+}
+function EncryptedColumn(arg0: {
+  type: string;
+  length: number;
+  nullable: boolean;
+  encryptionOptions: {
+    key: string; // Use a secure key management system
+    algorithm: string; // Choose your algorithm
+    ivLength: number;
+  };
+}): (target: User, propertyKey: 'secretRecovery') => void {
+  throw new Error('Function not implemented.');
 }
