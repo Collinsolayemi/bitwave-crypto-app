@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OtpService } from 'src/common/services/otp/otp.service';
@@ -10,6 +10,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto';
 import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto';
 import { SignupStep1Dto, SignupStep2Dto } from './dto/signup.dto.ts';
+import { CoinbaseService } from 'src/common/services/coinbase/coinbase.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -17,6 +18,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly otpService: OtpService,
+    private readonly coinbaseService: CoinbaseService,
   ) {}
 
   @ApiOperation({ summary: 'User signup' })
@@ -81,5 +83,11 @@ export class AuthController {
     return await this.authService.confirmSecretRecoveryPhrase(
       confirmSecretRecoveryPhraseDto,
     );
+  }
+
+  @ApiOperation({ summary: 'creat wallet' })
+  @Post('create-wallet')
+  async generateWallet() {
+    return await this.coinbaseService.createWallet();
   }
 }

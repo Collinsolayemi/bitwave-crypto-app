@@ -45,6 +45,9 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   myTransactions: Transaction[];
+
+  @Column({ nullable: true })
+  walletId: string;
 }
 function EncryptedColumn(arg0: {
   type: string;
