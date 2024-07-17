@@ -18,6 +18,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto.js';
 import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto.js';
 import { SignupStep1Dto, SignupStep2Dto } from './dto/signup.dto.ts.js';
+import { BlockCypherService } from 'src/common/services/blockcypher/blockcypher.service';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private userService: UserService,
     private otpService: OtpService,
+    private blockCypherService: BlockCypherService,
   ) {}
 
   async signupStep1(signupDto: SignupStep1Dto) {
@@ -71,8 +73,12 @@ export class AuthService {
       );
     }
 
+    //generate wallet address
+    const walletId = await this.blockCypherService.generateWallet(displayName);
+
     user.country = country;
     user.displayName = displayName;
+    user.walletId = walletId;
 
     await this.userRepository.save(user);
 

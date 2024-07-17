@@ -10,7 +10,8 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto';
 import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto';
 import { SignupStep1Dto, SignupStep2Dto } from './dto/signup.dto.ts';
-import { CoinbaseService } from 'src/common/services/coinbase/coinbase.service';
+import { CreateWalletDto } from 'src/common/services/blockcypher/dto/create-wallet.dto';
+import { BlockCypherService } from 'src/common/services/blockcypher/blockcypher.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -18,7 +19,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly otpService: OtpService,
-    private readonly coinbaseService: CoinbaseService,
+    private blockCypherService: BlockCypherService,
   ) {}
 
   @ApiOperation({ summary: 'User signup' })
@@ -88,6 +89,6 @@ export class AuthController {
   @ApiOperation({ summary: 'creat wallet' })
   @Post('create-wallet')
   async generateWallet() {
-    return await this.coinbaseService.createWallet();
+    return this.blockCypherService.generateWallet('tola');
   }
 }

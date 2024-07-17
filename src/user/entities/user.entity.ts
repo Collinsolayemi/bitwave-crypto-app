@@ -30,9 +30,6 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   country: string;
 
-  // @Column({ type: 'varchar', length: 100, nullable: true })
-  // secretRecovery: string;
-
   @Column({
     type: 'varchar',
     length: 1000,
@@ -40,7 +37,7 @@ export class User extends BaseEntity {
   })
   secretRecovery: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true, default: 0 })
   balance: number;
 
   @OneToMany(() => Transaction, (transaction) => transaction.user)

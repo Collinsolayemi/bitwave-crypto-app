@@ -20,7 +20,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@coinbase/coinbase-sdk": "^0.0.9",
     "@coinbase/waas-sdk-viem": "^3.0.2",
     "@coinbase/waas-sdk-web": "^3.3.2",
     "@nestjs-modules/mailer": "^2.0.2",
