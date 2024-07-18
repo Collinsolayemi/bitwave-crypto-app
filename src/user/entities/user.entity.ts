@@ -4,8 +4,10 @@ import {
   Column,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Wallet } from './wallet.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -43,8 +45,8 @@ export class User extends BaseEntity {
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   myTransactions: Transaction[];
 
-  @Column({ nullable: true })
-  walletId: string;
+  @OneToOne(() => Wallet, (wallet) => wallet.user)
+  wallet: Wallet;
 }
 function EncryptedColumn(arg0: {
   type: string;

@@ -41,3 +41,10 @@ export class CreateUserDto {
   )
   password: string;
 }
+
+export class GetUserDto {
+  @ApiProperty()
+  @IsDefined()
+  @IsNotEmpty()
+  email: string;
+}

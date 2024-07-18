@@ -19,12 +19,15 @@ import { SecretRecoveryPhraseDto } from './dto/secre-recovery.dto.js';
 import { ConfirmSecretRecoveryPhraseDto } from './dto/confirm-secret-recovery.dto.js';
 import { SignupStep1Dto, SignupStep2Dto } from './dto/signup.dto.ts.js';
 import { BlockCypherService } from 'src/common/services/blockcypher/blockcypher.service';
+import { Wallet } from 'src/user/entities/wallet.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
     private userService: UserService,
     private otpService: OtpService,
     private blockCypherService: BlockCypherService,
@@ -73,16 +76,25 @@ export class AuthService {
       );
     }
 
-    //generate wallet address
-    const walletId = await this.blockCypherService.generateWallet(displayName);
-
     user.country = country;
     user.displayName = displayName;
-    user.walletId = walletId;
+
+    //generate wallet address
+    const walletData = await this.blockCypherService.generateAddress();
+
+    const newWallet = this.walletRepository.create({
+      private: walletData.private,
+      public: walletData.public,
+      wif: walletData.wif,
+      addressId: walletData.address,
+      user: user,
+    });
+
+    await this.walletRepository.save(newWallet);
 
     await this.userRepository.save(user);
 
-    return { user, statusCode: HttpStatus.OK };
+    return { user, newWallet, statusCode: HttpStatus.OK };
   }
 
   async login(loginDto: LoginDto) {

@@ -86,9 +86,9 @@ export class AuthController {
     );
   }
 
-  @ApiOperation({ summary: 'creat wallet' })
-  @Post('create-wallet')
-  async generateWallet() {
-    return this.blockCypherService.generateWallet('tola');
+  @ApiOperation({ summary: 'User confirm thier secret recovery phrase' })
+  @Post('generate_address')
+  async generateAddress() {
+    return this.blockCypherService.generateAddress();
   }
 }

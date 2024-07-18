@@ -8,10 +8,14 @@ export class BlockCypherService {
 
   async generateAddress() {
     try {
-      const response = await axios.post(
-        `${process.env.BLOCKCYPHER_BASE_URL}/v1/btc/main/addrs?token=${process.env.BLOCKCYPHER_TOKEN}`,
-      );
-      const data = response.data.address;
+        const response = await axios.post(
+          `${process.env.BLOCKCYPHER_BASE_URL}/v1/btc/main/addrs?token=${process.env.BLOCKCYPHER_TOKEN}`,
+        );
+
+      // const response = await axios.post(
+      //   `${process.env.BLOCKCYPHER_BASE_URL}/v1/btc/test3/addrs`
+      // );
+      const data = response.data;
 
       return data;
     } catch (err) {
