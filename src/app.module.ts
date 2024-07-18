@@ -53,7 +53,7 @@ dotenv.config();
       database: process.env.POSTGRES_DATABASE,
       autoLoadEntities: true,
       entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
-      synchronize: true,
+      synchronize: false,
       ssl: {
         rejectUnauthorized: false,
       },
