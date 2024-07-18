@@ -17,32 +17,32 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  @ApiOperation({ summary: 'Create Transaction' })
+  @ApiOperation({ summary: 'Buy Crypto' })
   @Post()
   create(@Body() createTransactionDto: CreateTransactionDto) {
     return this.transactionService.createTransaction(createTransactionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.transactionService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.transactionService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.transactionService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.transactionService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateTransactionDto: UpdateTransactionDto,
-  ) {
-    return this.transactionService.update(+id, updateTransactionDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateTransactionDto: UpdateTransactionDto,
+  // ) {
+  //   return this.transactionService.update(+id, updateTransactionDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.transactionService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.transactionService.remove(+id);
+  // }
 }

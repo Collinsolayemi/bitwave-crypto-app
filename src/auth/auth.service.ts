@@ -94,7 +94,7 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    return { user, newWallet, statusCode: HttpStatus.OK };
+    return { newWallet, statusCode: HttpStatus.OK };
   }
 
   async login(loginDto: LoginDto) {
