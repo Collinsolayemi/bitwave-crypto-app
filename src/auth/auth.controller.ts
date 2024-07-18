@@ -85,10 +85,4 @@ export class AuthController {
       confirmSecretRecoveryPhraseDto,
     );
   }
-
-  @ApiOperation({ summary: 'User confirm thier secret recovery phrase' })
-  @Post('generate_address')
-  async generateAddress() {
-    return this.blockCypherService.generateAddress();
-  }
 }
